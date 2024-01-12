@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: kafka-dev
+  labels:
+    app: strimzi
+  name: kafka-ui
+spec:
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: job
+                operator: In
+                values:
+                - sidecars
+      containers:
+      - name: kafka-ui
+        image: provectuslabs/kafka-ui
+        resources:
+          limits:
+            memory: "1000Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 8080
+            name: kafka-ui
+            protocol: TCP
